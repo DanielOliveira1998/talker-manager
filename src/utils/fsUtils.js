@@ -1,6 +1,7 @@
 const fs = require('fs').promises;
 const path = require('path');
-const TALKER_DATA_PATH = '../talker.json'
+
+const TALKER_DATA_PATH = '../talker.json';
 
 async function readTalkerData() {
   try {
@@ -18,11 +19,11 @@ async function writeNewTalkerData(newTalker) {
     const updateTalkerList = JSON.stringify([...talkerList, newTalker]);
     await fs.writeFile(path.resolve(__dirname, TALKER_DATA_PATH), updateTalkerList);
   } catch (error) {
-    console.log(`Erro na escrita do arquivo: ${error}`)
+    console.log(`Erro na escrita do arquivo: ${error}`);
   }
 }
 
 module.exports = {
   readTalkerData,
-  writeNewTalkerData
-}
+  writeNewTalkerData,
+};
