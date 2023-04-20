@@ -1,6 +1,7 @@
 const express = require('express');
 
 const { readTalkerData } = require('./utils/fsUtils');
+
 const app = express();
 app.use(express.json());
 
