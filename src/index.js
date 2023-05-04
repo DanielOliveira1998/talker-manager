@@ -27,7 +27,7 @@ app.get('/talker/:id', async (req, res) => {
   if (talker) {
     return res.status(200).json(talker);
   }
-  return res.status(400).json(dontFound);
+  return res.status(404).json(dontFound);
 });
 
 app.listen(PORT, () => {
