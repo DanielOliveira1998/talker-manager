@@ -20,8 +20,14 @@ app.get('/talker', async (req, res) => {
 
 app.get('/talker/:id', async (req, res) => {
   const talkerList = await readTalkerData();
+  const dontFound = {
+    message: 'Pessoa palestrante não encontrada',
+  };
   const talker = talkerList.find((e) => e.id === Number(req.params.id));
-  return res.status(200).json(talker);
+  if (talker) {
+    return res.status(200).json(talker);
+  }
+  return res.status(400).json(dontFound);
 });
 
 app.listen(PORT, () => {
