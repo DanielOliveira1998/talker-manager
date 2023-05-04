@@ -18,6 +18,12 @@ app.get('/talker', async (req, res) => {
   return res.status(200).json(talkerList);
 });
 
+app.get('/talker/:id', async (req, res) => {
+  const talkerList = await readTalkerData();
+  const talker = talkerList.find((e) => e.id === Number(req.params.id));
+  return res.status(200).json(talker);
+});
+
 app.listen(PORT, () => {
   console.log('Online');
 });
