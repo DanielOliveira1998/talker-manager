@@ -14,10 +14,11 @@ app.use(express.json());
 
 const HTTP_OK_STATUS = 200;
 const PORT = process.env.PORT || '3001';
-app.get('talker/search', validateToken, async (req, res) => {
-  const talkerList = await readTalkerData();
-  const { q } = req.query;
-  const search = talkerList.filter((talker) => talker.name.includes(q));
+
+app.get('/talker/search', validateToken, async (req, res) => {
+const talkerList = await readTalkerData();
+const { q } = req.query;
+const search = talkerList.filter((talker) => talker.name.includes(q));
   return res.status(200).json(search);
 });
 
