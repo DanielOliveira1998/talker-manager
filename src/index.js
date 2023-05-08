@@ -14,6 +14,12 @@ app.use(express.json());
 
 const HTTP_OK_STATUS = 200;
 const PORT = process.env.PORT || '3001';
+app.get('talker/search', validateToken, async (req, res) => {
+  const talkerList = await readTalkerData();
+  const { q } = req.query;
+  const search = talkerList.filter((talker) => talker.name.includes(q));
+  return res.status(200).json(search);
+});
 
 // não remova esse endpoint, e para o avaliador funcionar
 app.get('/', (_request, response) => {
@@ -68,13 +74,6 @@ app.delete('/talker/:id', validateToken, async (req, res) => {
   const { id } = req.params;
   await deleteTalkerData(Number(id));
   return res.status(204).end();
-});
-
-app.get('talker/search', validateToken, async (req, res) => {
-  const talkerList = await readTalkerData();
-  const { q } = req.query;
-  const search = talkerList.filter((talker) => talker.name.includes(q));
-  return res.status(200).json(search);
 });
 
 app.listen(PORT, () => {
