@@ -10,10 +10,10 @@ const validateToken = (req, res, next) => {
 };
 const validateName = (req, res, next) => {
   const { name } = req.body;
-  const hasNameValid = name.length > 3;
   if (!name) {
     return res.status(400).json({ message: 'O campo "name" é obrigatório' });
   }
+  const hasNameValid = name.length > 3;
   if (!hasNameValid) {
     return res.status(400).json({ message: 'O "name" deve ter pelo menos 3 caracteres' });
   }

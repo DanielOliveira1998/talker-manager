@@ -15,7 +15,7 @@ async function readTalkerData() {
 
 async function writeNewTalkerData(newTalker) {
   try {
-    const talkerList = readTalkerData();
+    const talkerList = await readTalkerData();
     const updateTalkerList = JSON.stringify([...talkerList, newTalker]);
     await fs.writeFile(path.resolve(__dirname, TALKER_DATA_PATH), updateTalkerList);
   } catch (error) {

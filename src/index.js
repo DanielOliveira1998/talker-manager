@@ -2,7 +2,8 @@ const express = require('express');
 const crypto = require('crypto');
 
 const loginValidation = require('./middleware/loginValidation');
-const { readTalkerData, writeNewTalkerData, updateTalkerData, deleteTalkerData } = require('./utils/fsUtils');
+const { readTalkerData, writeNewTalkerData, 
+  updateTalkerData, deleteTalkerData } = require('./utils/fsUtils');
 const { 
   validateToken, validateName, validateAge, 
   validateTalk, validateTalkwatchedAt, validateTalkRate, 
@@ -44,9 +45,11 @@ app.post('/login', loginValidation, async (req, res) => {
 app.post('/talker', validateToken, validateName, validateAge, 
 validateTalk, validateTalkwatchedAt, validateTalkRate, 
 async (req, res) => {
-  const newTalker = req.body;
-  await writeNewTalkerData(newTalker);
-  return res.status(201).json(newTalker);
+  const { name, age, talk } = req.body;
+  const talkerList = await readTalkerData();
+  const talkerData = { name, age, id: talkerList.length + 1, talk };
+  await writeNewTalkerData(talkerData);
+  return res.status(201).json(talkerData);
 });
 
 app.put('/talker/:id', validateToken, validateName, validateAge, 
@@ -62,6 +65,13 @@ app.delete('/talker/:id', validateToken, async (req, res) => {
   const { id } = req.params;
   await deleteTalkerData(Number(id));
   return res.status(204).end();
+});
+
+app.get('talker/search', validateToken, async (req, res) => {
+  const talkerList = await readTalkerData();
+  const { q } = req.query;
+  const search = talkerList.filter((talker) => talker.name.includes(q));
+  return res.status(200).json(search);
 });
 
 app.listen(PORT, () => {
