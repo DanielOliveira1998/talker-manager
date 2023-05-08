@@ -55,10 +55,13 @@ async (req, res) => {
 app.put('/talker/:id', validateToken, validateName, validateAge, 
 validateTalk, validateTalkwatchedAt, validateTalkRate, 
 async (req, res) => {
+  const talkerList = await readTalkerData();
   const { id } = req.params;
   const updatedTalkerData = req.body;
+  const hasTalker = talkerList.find((e) => e.id === Number(id));
+  if (!hasTalker) return res.status(404).json({ message: 'Pessoa palestrante não encontrada' });
   const updatedTalker = await updateTalkerData(Number(id), updatedTalkerData);
-  return res.status(201).json(updatedTalker);
+  return res.status(200).json(updatedTalker);
 });
 
 app.delete('/talker/:id', validateToken, async (req, res) => {
