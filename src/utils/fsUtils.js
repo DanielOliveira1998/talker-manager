@@ -23,9 +23,10 @@ async function writeNewTalkerData(newTalker) {
   }
 }
 
-async function updateTalkerData(id, updatedTalker) {
+async function updateTalkerData(updatedTalker) {
   const talkerList = await readTalkerData();
-  const updateTalker = { id, ...updatedTalker };
+  const newId = talkerList[talkerList.lenght - 1].id + 1;
+  const updateTalker = { newId, ...updatedTalker };
   const updatedList = talkerList.reduce((acc, curr) => {
     if (acc.id === updateTalker.id) return [...acc, updateTalker];
     return [...acc, curr];
