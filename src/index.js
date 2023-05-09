@@ -89,11 +89,8 @@ app.delete('/talker/:id', validateToken, async (req, res) => {
 });
 
 app.patch('/talker/rate/:id', validateToken, validateRate, async (req, res) => {
-  const talkerList = await readTalkerData();
   const { rate } = req.body;
   const { id } = req.params;
-  // const findTalker = talkerList.find((talker) => talker.id === Number(id));
-  // findTalker.talk.rate = rate;
   const data = await updateTalkRate(id, rate);
   return res.status(204).json(data);
 });
