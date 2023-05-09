@@ -3,11 +3,13 @@ const crypto = require('crypto');
 
 const loginValidation = require('./middleware/loginValidation');
 const { readTalkerData, writeNewTalkerData, 
-  updateTalkerData, deleteTalkerData } = require('./utils/fsUtils');
+  updateTalkerData, deleteTalkerData, updateTalkRate } = require('./utils/fsUtils');
 const { 
   validateToken, validateName, validateAge, 
   validateTalk, validateTalkwatchedAt, validateTalkRate, 
 } = require('./middleware/talkerDataValidation');
+const { validateRateQuery, validateDateQuery, 
+  validateRate } = require('./middleware/searchQuerryValidation');
 
 const app = express();
 app.use(express.json());
@@ -15,11 +17,20 @@ app.use(express.json());
 const HTTP_OK_STATUS = 200;
 const PORT = process.env.PORT || '3001';
 
-app.get('/talker/search', validateToken, async (req, res) => {
+app.get('/talker/search', validateToken, validateRateQuery, validateDateQuery, async (req, res) => {
 const talkerList = await readTalkerData();
-const { q } = req.query;
-const search = talkerList.filter((talker) => talker.name.includes(q));
-  return res.status(200).json(search);
+const { q, rate, date } = req.query;
+let searchAcc = talkerList;
+if (q) {
+  searchAcc = searchAcc.filter((talker) => talker.name.includes(q));
+}
+if (rate) {
+  searchAcc = searchAcc.filter((talker) => talker.talk.rate === Number(rate));
+}
+if (date) {
+  searchAcc = searchAcc.filter((talker) => talker.talk.watchedAt === date);
+}
+return res.status(200).json(searchAcc);
 });
 
 // não remova esse endpoint, e para o avaliador funcionar
@@ -75,6 +86,16 @@ app.delete('/talker/:id', validateToken, async (req, res) => {
   const { id } = req.params;
   await deleteTalkerData(Number(id));
   return res.status(204).end();
+});
+
+app.patch('/talker/rate/:id', validateToken, validateRate, async (req, res) => {
+  const talkerList = await readTalkerData();
+  const { rate } = req.body;
+  const { id } = req.params;
+  // const findTalker = talkerList.find((talker) => talker.id === Number(id));
+  // findTalker.talk.rate = rate;
+  const data = await updateTalkRate(id, rate);
+  return res.status(204).json(data);
 });
 
 app.listen(PORT, () => {

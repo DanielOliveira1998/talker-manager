@@ -51,9 +51,27 @@ async function deleteTalkerData(id) {
   }
 }
 
+async function updateTalkRate(id, data) {
+  const talkerList = await readTalkerData();
+  const findTalker = talkerList.find((talker) => talker.id === Number(id));
+  findTalker.talk.rate = data;
+  const updatedTalkerList = talkerList.reduce((talkers, talker) => {
+    if (talker.id === id) return [...talkers, findTalker];
+    return [...talkerList, talker];
+  }, []);
+  const updatedData = JSON.stringify(updatedTalkerList);
+  try {
+    await fs.writeFile(path.resolve(__dirname, TALKER_DATA_PATH), updatedData);
+    return findTalker;
+  } catch (error) {
+    console.log(`Erro na escrita do arquivo: ${error}`);
+  }
+}
+
 module.exports = {
   readTalkerData,
   writeNewTalkerData,
   updateTalkerData,
   deleteTalkerData,
+  updateTalkRate,
 };
