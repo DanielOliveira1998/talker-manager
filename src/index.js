@@ -9,29 +9,13 @@ const {
   validateTalk, validateTalkwatchedAt, validateTalkRate, 
 } = require('./middleware/talkerDataValidation');
 const { validateRateQuery, validateDateQuery, 
-  validateRate } = require('./middleware/searchQuerryValidation');
+  validateRate } = require('./middleware/searchQueryValidation');
 
 const app = express();
 app.use(express.json());
 
 const HTTP_OK_STATUS = 200;
 const PORT = process.env.PORT || '3001';
-
-app.get('/talker/search', validateToken, validateRateQuery, validateDateQuery, async (req, res) => {
-const talkerList = await readTalkerData();
-const { q, rate, date } = req.query;
-let searchAcc = talkerList;
-if (q) {
-  searchAcc = searchAcc.filter((talker) => talker.name.includes(q));
-}
-if (rate) {
-  searchAcc = searchAcc.filter((talker) => talker.talk.rate === Number(rate));
-}
-if (date) {
-  searchAcc = searchAcc.filter((talker) => talker.talk.watchedAt === date);
-}
-return res.status(200).json(searchAcc);
-});
 
 // não remova esse endpoint, e para o avaliador funcionar
 app.get('/', (_request, response) => {
@@ -42,6 +26,22 @@ app.get('/talker', async (req, res) => {
   const talkerList = await readTalkerData();
   return res.status(200).json(talkerList);
 });
+
+app.get('/talker/search', validateToken, validateRateQuery, validateDateQuery, async (req, res) => {
+  const talkerList = await readTalkerData();
+  const { q, rate, date } = req.query;
+  let searchAcc = talkerList;
+  if (q) {
+    searchAcc = searchAcc.filter((talker) => talker.name.toLowerCase().includes(q.toLowerCase()));
+  }
+  if (rate) {
+    searchAcc = searchAcc.filter((talker) => talker.talk.rate === Number(rate));
+  }
+  if (date) {
+    searchAcc = searchAcc.filter((talker) => talker.talk.watchedAt === date);
+  }
+  return res.status(200).json(searchAcc);
+  });
 
 app.get('/talker/:id', async (req, res) => {
   const talkerList = await readTalkerData();
